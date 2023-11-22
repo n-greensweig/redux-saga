@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
 
 // put is dispatch
-import { takeEvery, put } from 'redux-saga/effects';
+import { takeEvery, put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 // END Saga imports
 
@@ -58,11 +58,36 @@ function* postElement(action) {
 
 }
 
+const planetList = (state = [], action) => {
+
+    if (action.type === 'SET_PLANETS') {
+        return action.payload;
+    }
+
+    return state;
+
+};
+
+function* getPlanets() {
+
+    try {
+        const response = yield axios.get('https://swapi.dev/api/planets/');
+        console.log('hey-o', response.data.results);
+        yield put({type: 'SET_PLANETS', payload: response.data.results});
+        // response.data.results.map(result => console.log('hey', result.name));
+    } catch (error) {
+        console.error('Error in getPlanets', error);
+        alert('Something went wrong.');
+    }
+
+}
+
 // this is the saga that will watch for actions
 function* rootSaga() {
     // Add all sagas here
     yield takeEvery('FETCH_ELEMENTS', fetchElements);
     yield takeEvery('ADD_ELEMENT', postElement);
+    yield takeLatest('FETCH_PLANETS', getPlanets);
 }
 
 
@@ -75,6 +100,7 @@ const storeInstance = createStore(
     // reducer is a function that runs every time an action is dispatched
     combineReducers({
         elementList,
+        planetList,
     }),
     applyMiddleware(sagaMiddleware, logger),
 );

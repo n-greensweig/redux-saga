@@ -4,15 +4,21 @@ import axios from 'axios';
 
 function App() {
   const dispatch = useDispatch();
-  const elements = useSelector(store => store.elementList)
+  const elements = useSelector(store => store.elementList);
+  const planetList = useSelector(store => store.planetList);
   const [newElement, setNewElement] = useState('');
 
   const getElements = () => {
     dispatch({ type: 'FETCH_ELEMENTS' });
   };
 
+  const getPlanets = () => {
+    dispatch({ type: 'FETCH_PLANETS' });
+  };
+
   useEffect(() => {
     getElements();
+    getPlanets();
   }, []);
 
   const addElement = () => {
@@ -40,6 +46,11 @@ function App() {
         onChange={evt => setNewElement(evt.target.value)}
       />
       <button onClick={addElement}>Add Element</button>
+
+      <h2>Planets</h2>
+      <ul>
+        {planetList.map(planet => <li key={planet.name}>{planet.name}</li>)}
+      </ul>
     </div>
   );
 }
