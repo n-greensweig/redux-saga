@@ -68,15 +68,37 @@ const planetList = (state = [], action) => {
 
 };
 
+const mostWantedList = (state = [], action) => {
+
+    if (action.type === 'SET_MOST_WANTED') {
+        console.log('yup', action.payload.items);
+        return action.payload.items;
+    }
+
+    return state;
+
+};
+
 function* getPlanets() {
 
     try {
         const response = yield axios.get('https://swapi.dev/api/planets/');
-        console.log('hey-o', response.data.results);
         yield put({type: 'SET_PLANETS', payload: response.data.results});
-        // response.data.results.map(result => console.log('hey', result.name));
     } catch (error) {
         console.error('Error in getPlanets', error);
+        alert('Something went wrong.');
+    }
+
+}
+
+function* getMostWanted() {
+
+    try {
+        const response = yield axios.get('https://api.fbi.gov/wanted/v1/list');
+        console.log('hey-o', response.data);
+        yield put({type: 'SET_MOST_WANTED', payload: response.data});
+    } catch (error) {
+        console.error('Error in getMostWanted', error);
         alert('Something went wrong.');
     }
 
@@ -87,7 +109,8 @@ function* rootSaga() {
     // Add all sagas here
     yield takeEvery('FETCH_ELEMENTS', fetchElements);
     yield takeEvery('ADD_ELEMENT', postElement);
-    yield takeLatest('FETCH_PLANETS', getPlanets);
+    yield takeEvery('FETCH_PLANETS', getPlanets);
+    yield takeLatest('FETCH_MOST_WANTED', getMostWanted);
 }
 
 
@@ -101,6 +124,7 @@ const storeInstance = createStore(
     combineReducers({
         elementList,
         planetList,
+        mostWantedList,
     }),
     applyMiddleware(sagaMiddleware, logger),
 );

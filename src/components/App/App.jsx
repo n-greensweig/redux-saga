@@ -6,6 +6,8 @@ function App() {
   const dispatch = useDispatch();
   const elements = useSelector(store => store.elementList);
   const planetList = useSelector(store => store.planetList);
+  const mostWantedList = useSelector(store => store.mostWantedList);
+  console.log(mostWantedList);
   const [newElement, setNewElement] = useState('');
 
   const getElements = () => {
@@ -16,9 +18,14 @@ function App() {
     dispatch({ type: 'FETCH_PLANETS' });
   };
 
+  const getMostWanted = () => {
+    dispatch({ type: 'FETCH_MOST_WANTED' });
+  };
+
   useEffect(() => {
     getElements();
     getPlanets();
+    getMostWanted();
   }, []);
 
   const addElement = () => {
@@ -50,6 +57,11 @@ function App() {
       <h2>Planets</h2>
       <ul>
         {planetList.map(planet => <li key={planet.name}>{planet.name}</li>)}
+      </ul>
+
+      <h2>Most Wanted</h2>
+      <ul>
+        {mostWantedList.map(person => <li key={person.id}>{person}</li>)}
       </ul>
     </div>
   );
